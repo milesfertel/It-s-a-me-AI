@@ -6,7 +6,7 @@
 
 population = {} --population container
 backgroundColor = 0x2C3D72000 --red color
-MAX_FRAMES = 2500 --frames to pass the game
+MAX_FRAMES = 5000 --frames to pass the game
 POPULATION_SIZE = 25 --size of individuals in the generation
 MUTATE_JUMP = 0.01
 MUTATE_B = 0.01
@@ -17,35 +17,28 @@ JUMP_WEIGHT = 0.50
 B_WEIGHT = 0.50 --probability of dashing
 RIGHT_WEIGHT = 0.50 --probability of moving to the right
 
-function BuildArray(it)
-	local arr = {}
-	for i = 0, MAX_FRAMES do
-		arr[i] = it()
-	end
-	return arr
-end
-
 function generatePerfectIndividual()
 	local individual = {}
 	individual.frames = {}
-	local c = 0
-	for _ in io.lines("mario163") do
-		c = c + 1
-	end
-	print(c)
 
-	lines = BuildArray(io.lines("mario163"))
-	local line = ""
-	for i = 0, MAX_FRAMES do 
-		line = lines[i]
-		local words = BuildArray(line:gmatch("%w+"))
-		local count = tonumber(words[1])
+	local file = io.open("mario163", "rb");
+	local data = file:read("*a")
+	lines = data:gmatch("[^\r\n]+")
+	local count = 0
+	for line in lines do 
+		local words = line:gmatch("%w+")
+		count = tonumber(words())
 		individual.frames[count] = {}
-		individual.frames[count].a = words[2] == "true"
-		individual.frames[count].b = words[3] == "true"
-		individual.frames[count].right = words[4] == "true"
+		individual.frames[count].a = words() == "true"
+		individual.frames[count].b = words() == "true"
+		individual.frames[count].right = words() == "true"
 	end
-	print(line)
+	for i = count + 1, MAX_FRAMES do
+		individual.frames[i] = {}
+		individual.frames[i].a = math.random() < JUMP_WEIGHT and true or false
+		individual.frames[i].b = math.random() < B_WEIGHT and true or false
+		individual.frames[i].right = math.random() < RIGHT_WEIGHT and true or false
+	end
 	return individual
 end
 
@@ -123,12 +116,11 @@ function evolvePopulation()
 
 end
 
-function drawGui(index, generation, highestFit, highestSpeed)
+function drawGui(index, generation)
 	--Draw GUI Heads Up display
 	gui.drawBox(0, 0, 300, 45, backgroundColor, backgroundColor)
 	gui.drawText(0, 10, "Generation No." .. generation .. "--Individual No." .. index, 0xFFFFFFFF, 8)
 	gui.drawText(0, 20, "Fitness =" .. population[index].fitness .. "in" .. population[index].frameNumber .. "frames", 0xFFFFFFFF, 8)
-	gui.drawText(0, 30, "Top Fitness =" .. maxFitness, 0xFFFFFFFF, 8)
 end
 
 console.writeline("Generating random population.")
@@ -145,9 +137,11 @@ while true do --do forever
 		savestate.load(FILE_NAME) --load the start of the level
 
 		population[index].frameNumber = 0
+		population[index].level = 1
 		while true do --play with the individual
 			local xPos = memory.readbyte(0x6D) * 0x100 + memory.readbyte(0x86) --mario X position in level
-			if population[index].frameNumber == MAX_FRAMES or sameCount == MAX_SAME then
+			if (population[index].frameNumber == MAX_FRAMES or sameCount == MAX_SAME) and (population[index].fitness < 163 and population[index].level == 1) then
+				console.writeline("MAX_FRAMES or MAX_SAME: " .. population[index].frameNumber .. " " .. sameCount)
 				break
 			end
 
@@ -164,9 +158,13 @@ while true do --do forever
 			population[index].fitness = xPos
 			population[index].fitness = population[index].fitness / 20 --normalizing by dividing by 50
 			population[index].fitness = math.floor(population[index].fitness) --rounded to an int
+			if population[index].fitness == 163 then
+				population[index].level = 2
+			end
+			population[index].fitness = (population[index].level - 1) * 163 + population[index].fitness 
 			population[index].frameNumber = population[index].frameNumber + 1 --adding ++ 1 to the frame
 			
-			-- drawGui(index, generation, highestFit, highestSpeed)
+			drawGui(index, generation, population[index].frameNumber)
 
 			controller = {}
 			controller["P1 A"] = population[index].frames[population[index].frameNumber].a
