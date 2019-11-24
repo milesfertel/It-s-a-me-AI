@@ -17,6 +17,37 @@ JUMP_WEIGHT = 0.50
 B_WEIGHT = 0.50 --probability of dashing
 RIGHT_WEIGHT = 0.50 --probability of moving to the right
 
+function BuildArray(it)
+	local arr = {}
+	for i = 0, MAX_FRAMES do
+		arr[i] = it()
+	end
+	return arr
+end
+
+function generatePerfectIndividual()
+	local individual = {}
+	individual.frames = {}
+	local c = 0
+	for _ in io.lines("mario163") do
+		c = c + 1
+	end
+	print(c)
+
+	lines = BuildArray(io.lines("mario163"))
+	local line = ""
+	for i = 0, MAX_FRAMES do 
+		line = lines[i]
+		local words = BuildArray(line:gmatch("%w+"))
+		local count = tonumber(words[1])
+		individual.frames[count] = {}
+		individual.frames[count].a = words[2] == "true"
+		individual.frames[count].b = words[3] == "true"
+		individual.frames[count].right = words[4] == "true"
+	end
+	print(line)
+	return individual
+end
 
 function generateIndividualDNA() --generate DNA from a random individual
 	local individual = {}
@@ -33,7 +64,8 @@ end
 
 function generateRandomPopulation() --generate first random population
 	for count = 0, POPULATION_SIZE do
-		population[count] = generateIndividualDNA()
+		-- population[count] = generateIndividualDNA()
+		population[count] = generatePerfectIndividual()
 	end
 end
 
