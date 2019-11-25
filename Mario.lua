@@ -89,8 +89,8 @@ end
 
 population = {} --population container
 backgroundColor = 0x2C3D72000 --red color
-MAX_FRAMES = 10000 --frames to pass the game
-POPULATION_SIZE = 35 --size of individuals in the generation
+MAX_FRAMES = 50000 --frames to pass the game
+POPULATION_SIZE = 50 --size of individuals in the generation
 MUTATE_JUMP = 0.01
 MUTATE_B = 0.01
 MUTATE_RIGHT = 0.01
@@ -122,7 +122,7 @@ function generatePerfectIndividual()
 		individual.frames[i].b = math.random() < B_WEIGHT and true or false
 		individual.frames[i].right = math.random() < RIGHT_WEIGHT and true or false
 	end
-	return clone(individual)
+	return clone(individual, true)
 end
 
 function generateIndividualDNA() --generate DNA from a random individual
@@ -146,15 +146,15 @@ function generateRandomPopulation() --generate first random population
 end
 
 
-function clone(indiv) --slightly change the DNA of an individual
+function clone(indiv, mutate) --slightly change the DNA of an individual
 	local newIndiv = {}
 	newIndiv.frames = {}
 
 	for count = 0, MAX_FRAMES do
 		newIndiv.frames[count] = {}
-		newIndiv.frames[count].a = math.random() < MUTATE_JUMP and not indiv.frames[count].a or indiv.frames[count].a
-		newIndiv.frames[count].b = math.random() < MUTATE_B and not indiv.frames[count].b or indiv.frames[count].b
-		newIndiv.frames[count].right = math.random() < MUTATE_RIGHT and not indiv.frames[count].right or indiv.frames[count].right
+		newIndiv.frames[count].a = math.random() < MUTATE_JUMP and mutate and not indiv.frames[count].a or indiv.frames[count].a
+		newIndiv.frames[count].b = math.random() < MUTATE_B and mutate and not indiv.frames[count].b or indiv.frames[count].b
+		newIndiv.frames[count].right = math.random() < MUTATE_RIGHT and mutate and not indiv.frames[count].right or indiv.frames[count].right
 	end
 
 	return newIndiv
@@ -190,11 +190,17 @@ function evolvePopulation()
 	console.writeline("Max Fitness: " .. maxFitness)
 
 	for i = 1, POPULATION_SIZE do
-		newPopulation[i] = population[math.random(TOP_N)]
+		local prob = population[1].fitness / (population[1].fitness + population[2].fitness)
+		newPopulation[i] = population[math.random() < prob and 1 or 2]
 	end
 
-	for i = 1, POPULATION_SIZE do
-		newPopulation[i] = clone(newPopulation[i])
+	local n = 3
+	for i = 1, n do
+		newPopulation[i] = clone(newPopulation[i], false)
+	end
+
+	for i = n + 1, POPULATION_SIZE do
+		newPopulation[i] = clone(newPopulation[i], true)
 	end
 
 	population = newPopulation --replacing new population with a new one
