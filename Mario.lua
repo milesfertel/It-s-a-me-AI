@@ -1,3 +1,5 @@
+
+
 --
 -- SUPER MARIO BROS AI
 --    Genetic Algo
@@ -9,30 +11,33 @@ GeneLib = require("GeneLib")
 
 settings = {
 	-- Parameters
-	MAX_FRAMES = 500,
-	POPULATION_SIZE = 5,
+	MAX_FRAMES = 50000,
+	POPULATION_SIZE = 50,
 	BUTTONS = {
 		"P1 A",
 		"P1 B",
-		"P1 Right"
+		"P1 Right",
+		"P1 Left"
         },
 	BEGINNING_RATES = {
 		["P1 A"] = 0.5,
 		["P1 B"] = 0.5,
-		["P1 Right"] = 0.5
+		["P1 Right"] = 0.5,
+		["P1 Left"] = 0.5
 	},
 	MUTATION_RATES = {
 		["P1 A"] = 0.01,
 		["P1 B"] = 0.01,
-		["P1 Right"] = 0.01
+		["P1 Right"] = 0.01,
+		["P1 Left"] = 0.01
 	},
         FILE_NAME = "SMB1-1.state",
 	ROM_NAME = "mario_rom.nes",
         CACHE = true,
 	GAME_NAME = "mario",
 	MAX_SAME = 100, -- Number of frames with the same fitness
-	CUTOFF = 163,
-	CHECKPOINTED = false
+	CUTOFF = 320,
+	CHECKPOINTED = false 
 }
 
 function getFitness(indiv)
@@ -59,13 +64,13 @@ function run(indiv)
 		if not indiv.finished then
 			-- Check if wasting time
 			if indiv.frameNumber == settings.MAX_FRAMES or sameCount >= settings.MAX_SAME then
-				console.writeline("MAX_FRAMES or MAX_SAME: " .. indiv.frameNumber .. " " .. sameCount)
+				-- console.writeline("MAX_FRAMES or MAX_SAME: " .. indiv.frameNumber .. " " .. sameCount)
 				break
 			end
 
 			-- Makes sure we're not standing in one place
 			indiv.xPos = MarioLib:getXPos()
-			if math.abs(indiv.xPos - oldPos) == 0 then
+			if math.abs(indiv.xPos - oldPos) <= 10 then
 				sameCount = sameCount + 1
 			else
 				sameCount = 0
@@ -108,4 +113,4 @@ end
 settings.runIndividual = run
 
 gene = GeneLib:createAlgo(settings)
-gene:runEvolution(3)
+gene:runEvolution()

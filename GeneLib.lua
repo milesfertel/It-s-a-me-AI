@@ -66,7 +66,7 @@ function GeneLib:generatePerfectIndividual()
 	individual.frames = {}
 
 	local settings = self.settings
-	local file = io.open(self.GAME_NAME .. "163", "rb")
+	local file = io.open(settings.GAME_NAME .. "320", "rb")
 	local data = file:read("*a")
 	local count = 0
 
@@ -86,14 +86,14 @@ function GeneLib:generatePerfectIndividual()
 			individual.frames[i][button] = math.random() < rates[button] and true or false
 		end
 	end
-	return self:clone(individual, true)
+	return self:clone(individual, false)
 end
 
 function GeneLib:generateRandomPopulation() --generate first random population
 	local settings = self.settings
 	for count = 1, settings.POPULATION_SIZE do
 		if settings.CHECKPOINTED then
-			-- self.population[count] = generatePerfectIndividual()
+			self.population[count] = self:generatePerfectIndividual()
 		else
 			self.population[count] = self:generateIndividualDNA()
 		end
