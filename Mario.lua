@@ -83,7 +83,7 @@ function run(indiv)
 			indiv.frameNumber = indiv.frameNumber + 1 --adding ++ 1 to the frame
 
 			controller = {}
-			for button in settings.buttons do
+			for i, button in ipairs(setttings.BUTTONS) do
 			    controller[button] = indiv.frames[indiv.frameNumber][button]
 			end
 
