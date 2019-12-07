@@ -73,16 +73,16 @@ function MarioLib:getXPos()
 end
 
 function MarioLib:getLevelStr()
-	return tostring(self.getWorldNumber()) .. tostring(self.getLevelNumber()) .. tostring(self.getAreaNumber())
+	return tostring(self:getWorldNumber()) .. tostring(self:getLevelNumber()) .. tostring(self:getAreaNumber())
 end
 
 function MarioLib:getMaxDist()
-	return self.distances[self.getLevelStr()] or 0
+	return self.distances[self:getLevelStr()] or 0
 end
 
 function MarioLib:finished()
-	local maxDistance = self.getMaxDist()
-	local xPos = self.getXPos()
+	local maxDistance = self:getMaxDist()
+	local xPos = self:getXPos()
 	if ((xPos >= maxDistance - 15) and (xPos <= maxDistance)) then
 		return true
 	else
@@ -92,7 +92,7 @@ end
 
 function MarioLib:isDead()
     local playerState = memory.readbyte(self.addrs.playerState)
-    local yViewport = self.getYViewport()
+    local yViewport = self:getYViewport()
     if (playerState == 0x06) or (playerState == 0x0b) or (yViewport > 1) then
         return true
     else

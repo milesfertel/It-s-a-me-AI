@@ -86,7 +86,7 @@ function GeneLib:generatePerfectIndividual()
 			individual.frames[i][button] = math.random() < rates[button] and true or false
 		end
 	end
-	return self.clone(individual, true)
+	return self:clone(individual, true)
 end
 function GeneLib:generateRandomPopulation() --generate first random population
 	local settings = self.settings
@@ -94,7 +94,7 @@ function GeneLib:generateRandomPopulation() --generate first random population
 		if settings.CHECKPOINTED then
 			-- self.population[count] = generatePerfectIndividual()
 		else
-			self.population[count] = self.generateIndividualDNA()
+			self.population[count] = self:generateIndividualDNA()
 		end
 	end
 end
@@ -110,12 +110,12 @@ function GeneLib:evolvePopulation()
 	local settings = self.settings
 	local bestIndiv = self.population[1]
 	if settings.CACHE and bestIndiv.fitness > self.maxFitness and bestIndiv.fitness > settings.CUTOFF then
-		self.writeIndiv(bestIndiv, settings.GAME_NAME .. bestIndiv.fitness)
+		self:writeIndiv(bestIndiv, settings.GAME_NAME .. bestIndiv.fitness)
 	end
 
 	newPopulation[1] = bestIndiv
 	for count = 2, settings.POPULATION_SIZE do
-		newPopulation[count] = self.clone(self.population[count], true)
+		newPopulation[count] = self:clone(self.population[count], true)
 	end
 
 	self.population = newPopulation
@@ -127,20 +127,20 @@ function GeneLib:runEvolution(generations)
 	end
 
 	console.writeline("Generating random population.")
-	self.generateRandomPopulation()
+	self:generateRandomPopulation()
 	console.writeline("Ready. Playing with first generation.")
 
 	local settings = self.settings
 	for generation = 1, generations do
 	    for i = 1, settings.POPULATION_SIZE do
 		local indiv = self.population[i]
-		local res = self.runIndividual(indiv)
+		local res = self:runIndividual(indiv)
 		console.writeline(indiv.fitness .. " " .. res.fitness)
 		console.writeline("Fitness reached:" .. i .. " > " .. indiv.fitness) --log finess reached
 	    end
 	    console.writeline("")
 	    console.writeline("Evolving new generation." .. "(" .. generation .. ")")
-	    self.evolvePopulation()
+	    self:evolvePopulation()
 	end
 end
 
