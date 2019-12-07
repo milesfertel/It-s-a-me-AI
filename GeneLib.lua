@@ -144,4 +144,4 @@ function GeneLib:runEvolution(generations)
 	end
 end
 
-
+return GeneLib
