@@ -67,7 +67,7 @@ function run(indiv)
 			end
 
 			-- Makes sure we're not standing in one place
-			indiv.xPos = get_x_pos()
+			indiv.xPos = MarioLib.getXPos()
 			if math.abs(indiv.xPos - oldPos) == 0 then
 				sameCount = sameCount + 1
 			else
@@ -108,3 +108,6 @@ function run(indiv)
 	end
 	return indiv
 end
+
+gene = GeneLib.createAlgo(settings)
+gene.runEvolution(3)
