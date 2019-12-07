@@ -9,8 +9,8 @@ GeneLib = require("GeneLib")
 
 settings = {
 	-- Parameters
-        MAX_FRAMES = 50000,
-	POPULATION_SIZE = 50,
+	MAX_FRAMES = 500,
+	POPULATION_SIZE = 5,
 	BUTTONS = {
 		"P1 A",
 		"P1 B",
@@ -32,10 +32,7 @@ settings = {
 	GAME_NAME = "mario",
 	MAX_SAME = 100, -- Number of frames with the same fitness
 	CUTOFF = 163,
-	CHECKPOINTED = false,
-
-	-- Game specific functions
-	runIndividual = run
+	CHECKPOINTED = false
 }
 
 function getFitness(indiv)
@@ -57,17 +54,17 @@ function run(indiv)
 	indiv.finished = false
 	indiv.xPos = 0
 	indiv.fitness = 0
-	indiv.curLevel = MarioLib.getLevelStr()
+	indiv.curLevel = MarioLib:getLevelStr()
 	while true do --play with the individual
 		if not indiv.finished then
 			-- Check if wasting time
-			if indiv.frameNumber == settings.MAX_FRAMES or sameCount >= indiv.MAX_SAME then
+			if indiv.frameNumber == settings.MAX_FRAMES or sameCount >= settings.MAX_SAME then
 				console.writeline("MAX_FRAMES or MAX_SAME: " .. indiv.frameNumber .. " " .. sameCount)
 				break
 			end
 
 			-- Makes sure we're not standing in one place
-			indiv.xPos = MarioLib.getXPos()
+			indiv.xPos = MarioLib:getXPos()
 			if math.abs(indiv.xPos - oldPos) == 0 then
 				sameCount = sameCount + 1
 			else
@@ -89,15 +86,15 @@ function run(indiv)
 
 			joypad.set(controller) --api to press use the control
 
-			if MarioLib.isDead() then
+			if MarioLib:isDead() then
 				break --if mario dies restart game with next individual
 			end
 
 			-- Check if we beat the level
-			indiv.finished = MarioLib.finished()
+			indiv.finished = MarioLib:finished()
 		else
 			-- Wait for next level to start
-			local curLevel = MarioLib.getLevelStr()
+			local curLevel = MarioLib:getLevelStr()
 			if curLevel ~= indiv.curLevel then
 				indiv.curLevel = curLevel
 				indiv.finished = false
@@ -106,8 +103,9 @@ function run(indiv)
 		-- drawGui(index, generation, population[index].frameNumber)
 		emu.frameadvance() --Api advance frame in the game
 	end
-	return indiv
 end
+
+settings.runIndividual = run
 
 gene = GeneLib:createAlgo(settings)
 gene:runEvolution(3)

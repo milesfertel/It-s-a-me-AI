@@ -135,8 +135,7 @@ function GeneLib:runEvolution(generations)
 	for generation = 1, generations do
 	    for i = 1, settings.POPULATION_SIZE do
 		local indiv = self.population[i]
-		local res = self:runIndividual(indiv)
-		console.writeline(indiv.fitness .. " " .. res.fitness)
+		settings.runIndividual(indiv)
 		console.writeline("Fitness reached:" .. i .. " > " .. indiv.fitness) --log finess reached
 	    end
 	    console.writeline("")
