@@ -109,5 +109,5 @@ function run(indiv)
 	return indiv
 end
 
-gene = GeneLib.createAlgo(settings)
-gene.runEvolution(3)
+gene = GeneLib:createAlgo(settings)
+gene:runEvolution(3)
