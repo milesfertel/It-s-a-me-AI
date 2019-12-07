@@ -18,7 +18,7 @@ function GeneLib:clone(indiv, mutate)
 	for count = 0, settings.MAX_FRAMES do
 		newIndiv.frames[count] = {}
 		rates = settings.MUTATION_RATES
-		for i, button in ipairs(setttings.BUTTONS) do
+		for i, button in ipairs(settings.BUTTONS) do
 			newIndiv.frames[count][button] = math.random() < rates[button] and mutate and not indiv.frames[count][button] or indiv.frames[count][button]
 		end
 	end
@@ -34,7 +34,7 @@ function GeneLib:generateIndividualDNA()
 	for count = 0, settings.MAX_FRAMES do
 		individual.frames[count] = {}
 		rates = settings.BEGINNING_RATES
-		for i, button in ipairs(setttings.BUTTONS) do
+		for i, button in ipairs(settings.BUTTONS) do
 			individual.frames[count][button] = math.random() < rates[button] and true or false
 		end
 	end
@@ -48,7 +48,7 @@ function GeneLib:writeIndiv(indiv, filename)
 	settings = self.settings
 	for count = 0, settings.MAX_FRAMES do
 		local s = ""
-		for i, button in ipairs(setttings.BUTTONS) do
+		for i, button in ipairs(settings.BUTTONS) do
 			s = s .. tostring(indiv.frames[count][button]) .. " "
 		end
 		s = s:sub(1, -2) .. "\n"
@@ -75,14 +75,14 @@ function GeneLib:generatePerfectIndividual()
 		local words = line:gmatch("%w+")
 		count = tonumber(words())
 		individual.frames[count] = {}
-		for i, button in ipairs(setttings.BUTTONS) do
+		for i, button in ipairs(settings.BUTTONS) do
 		    individual.frames[count][button] = words() == "true"
 		end
 	end
 	for i = count + 1, settings.MAX_FRAMES do
 		individual.frames[i] = {}
 		rates = settings.BEGINNING_RATES
-		for i, button in ipairs(setttings.BUTTONS) do
+		for i, button in ipairs(settings.BUTTONS) do
 			individual.frames[i][button] = math.random() < rates[button] and true or false
 		end
 	end
