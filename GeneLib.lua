@@ -88,6 +88,7 @@ function GeneLib:generatePerfectIndividual()
 	end
 	return self:clone(individual, true)
 end
+
 function GeneLib:generateRandomPopulation() --generate first random population
 	local settings = self.settings
 	for count = 1, settings.POPULATION_SIZE do
